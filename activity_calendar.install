@@ -1,0 +1,13 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the Activity Calendar module.
+ */
+
+ /**
+  * Implements hook_uninstall().
+  */
+ function activity_calendar_uninstall() {
+   // Delete the configuration file.
+   config('activity_calendar.settings')->delete();
+ }

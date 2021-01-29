@@ -1,0 +1,6 @@
+name = Activity Calendar
+description = Visualizes users' activity over the yearly calendar.
+backdrop = 1.x
+version = BACKDROP_VERSION
+package = Other
+configure = admin/config/people/activity_calendar
