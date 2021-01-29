@@ -51,6 +51,8 @@ Credits
 
 - Sponsored by [AltaGrade](https://www.altagrade.com) - a Backdrop and Drupal
   hosting provider.
+- Cal-HeatMap library is eveloped by [Wan Qi Chen](https://github.com/wa0x6e) and
+  is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 
 License
 -------
