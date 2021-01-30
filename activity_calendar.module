@@ -22,7 +22,6 @@ function activity_calendar_menu() {
  return $items;
 }
 
-
 /**
 * Implements hook_user_view_alter().
 */
@@ -44,13 +43,6 @@ function activity_calendar_user_view_alter(&$build) {
     $calendar_type = 'year';
     $range = '1';
   }
-
-  // Find user registration year to use as his/her calendar start.
-  $created = db_select('users', 'u')
-     ->fields('u', array('created'))
-     ->condition('u.uid', $uid)
-     ->execute()->fetchField();
-  $start = date("Y",$created);
 
   if ($config->get('nodes') == 1) {
 
@@ -86,6 +78,17 @@ function activity_calendar_user_view_alter(&$build) {
      }
   }
 
+  // Display the control button only if user has nodes for previous years.
+  $first_node_date = min(array_keys($user_activity));
+  $start = date("Y",$first_node_date);
+  if ($start < date("Y", time())) {
+    $control_buttons = '<div class="control-buttons">
+    <button id="PreviousDomain" class="btn previous">'.t('Previous').'</button>
+    <button id="CurrentDomain" class="btn current">'.t('Current').'</button>
+    <button id="NextDomain" class="btn next">'.t('Next').'</button>
+    </div>';
+  }
+
   // Build activity heatmap calendar.
   $build['heatmap'] = [
     '#type' => 'item',
@@ -93,11 +96,7 @@ function activity_calendar_user_view_alter(&$build) {
     '#weight' => '100',
     '#markup' => '
     <div id="activity-calendar">
-    <div class="control-buttons">
-    <button id="PreviousDomain" class="btn previous">'.t('Previous').'</button>
-    <button id="CurrentDomain" class="btn current">'.t('Current').'</button>
-    <button id="NextDomain" class="btn next">'.t('Next').'</button>
-    </div>
+    '.$control_buttons.'
     <div id="heatmap"></div>
     </div>
     <script type="text/javascript">
