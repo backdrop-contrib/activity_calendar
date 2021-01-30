@@ -12,6 +12,8 @@ Under the *Activity points* section you can select actions that will increment
 activity points, such as creating nodes or submitting comments, limit content
 types and set how many points users get by creating new nodes and comments.
 
+![Activity Calendar](https://raw.githubusercontent.com/backdrop-contrib/activity_calendar/1.x-1.x/activity_calandar.png
+)
 
 Requirements
 ------------
