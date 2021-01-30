@@ -36,7 +36,10 @@ function activity_calendar_admin_form($form, &$form_state) {
     '#default_value' => $config->get('calendar_type'),
   ];
 
-  $json_file = '/'.$path.'/lib/user_activity.json';
+  // Indicate path to data file.
+  $json_file = '/' . $path . '/lib/user_activity.json';
+
+  // Change calendar type and range per user selection.
   if ($config->get('calendar_type') == 'monthly') {
     $calendar_type = 'month';
     $range = '12';
@@ -46,6 +49,14 @@ function activity_calendar_admin_form($form, &$form_state) {
     $range = '1';
   }
 
+  // Sync calendar with the system's first day of the week.
+  if (config_get('system.date', 'first_day') == '1') {
+    $first_day = "true";
+  }
+  else {
+    $first_day = "false";
+  }
+
   // Build activity heatmap calendar.
   $form['wrapper']['calendar']['type'] = [
     '#type' => 'item',
@@ -53,19 +64,19 @@ function activity_calendar_admin_form($form, &$form_state) {
     '#markup' => '
     <div id="activity-calendar">
     <div class="control-buttons">
-    <button id="PreviousDomain" class="btn previous">'.t('Previous').'</button>
-    <button id="NextDomain" class="btn next">'.t('Next').'</button>
+    <button id="PreviousDomain" class="btn previous">' . t('Previous') . '</button>
+    <button id="NextDomain" class="btn next">' . t('Next') . '</button>
     </div>
     <div id="heatmap"></div>
     </div>
     <script type="text/javascript">
     var cal = new CalHeatMap();
     cal.init({
-      legendColors: ["'.$config->get('color_min').'","'.$config->get('color_max').'"],
+      legendColors: ["' . $config->get('color_min') . '","' . $config->get('color_max') . '"],
     	itemSelector: "#heatmap",
-    	domain: "'.$calendar_type.'",
+    	domain: "' . $calendar_type . '",
     	subDomain: "day",
-    	data: "'.$json_file.'",
+    	data: "' . $json_file . '",
       minDate: new Date(2015, 1),
       start: new Date(2021, 0),
       maxDate: new Date(2021, 0),
@@ -86,12 +97,14 @@ function activity_calendar_admin_form($form, &$form_state) {
     	cellSize: 10,
     	cellPadding: 1,
       domainGutter: 0,
-    	range: '.$range.',
-      itemName: ["'.t('point').'", "'.t('points').'"],
+    	range: ' . $range . ',
+      itemName: ["' . t('point') . '", "' . t('points') . '"],
       domainDynamicDimension: false,
     	previousSelector: "#PreviousDomain",
     	nextSelector: "#NextDomain",
-      legend: ['.$config->get('thresholds').']
+      legend: [' . $config->get('thresholds') . '],
+      highlight: "now",
+      weekStartOnMonday: ' . $first_day . ',
     });
     $("#CurrentDomain").on("click", function(event) {
       cal.rewind();
@@ -103,28 +116,28 @@ function activity_calendar_admin_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Lightest color'),
     '#size' => 10,
-    '#description' => t('Color-code used for highlighting the calendar cells. Format: "#000000"'),
+    '#description' => t('Color-code used for highlighting the calendar cells. Format: "#dae289"'),
     '#default_value' => $config->get('color_min'),
   ];
   $form['wrapper']['calendar']['color_max'] = [
     '#type' => 'textfield',
     '#title' => t('Darkest color'),
     '#size' => 10,
-    '#description' => t('Color-code used for highlighting the calendar cells. Format: "#000000"'),
+    '#description' => t('Color-code used for highlighting the calendar cells. Format: "#245220"'),
     '#default_value' => $config->get('color_max'),
   ];
   $form['wrapper']['calendar']['thresholds'] = [
     '#type' => 'textfield',
     '#title' => t('Point thresholds'),
     '#size' => 10,
-    '#description' => t('Comma-seperated point thresholds for changing the color of a user\'s daily activity.'),
+    '#description' => t('Comma-seperated point thresholds that change daily activity color.'),
     '#default_value' => $config->get('thresholds'),
   ];
 
   $form['wrapper']['points'] = [
     '#type' => 'fieldset',
     '#title' => t('Activity points'),
-    '#description' => t('Select actions for which the activity points will increment.'),
+    '#description' => t('Select user actions which increment their activity points.'),
   ];
 
   $form['wrapper']['points']['nodes'] = [
@@ -136,7 +149,7 @@ function activity_calendar_admin_form($form, &$form_state) {
   $form['wrapper']['points']['node_types'] = [
     '#type' => 'fieldset',
     '#title' => t('Node types'),
-    '#description' => t('Select content types that should be counted when collecting activity points.'),
+    '#description' => t('Select content types that are counted when collecting activity points.'),
     '#states' => [
       'invisible' => [
         ':input[name="nodes"]' => ['checked' => FALSE],
@@ -191,9 +204,12 @@ function activity_calendar_admin_form($form, &$form_state) {
  * Form validate for admin form.
  */
 function activity_calendar_admin_form_validate($form, &$form_state) {
-  foreach (['node_points' => 'comment_points'] as $field) {
+  foreach (['node_points', 'comment_points'] as $field) {
     if (!is_numeric($form_state['values'][$field])) {
       form_set_error($field, t('The field must be numeric.'));
     }
+  }
+  if ($form_state['values']['nodes'] == 0 && $form_state['values']['nodes'] == 0) {
+    form_set_error('activity_calendar', t('You must select at least one of user actions under the "Activity points" section.'));
   }
 }

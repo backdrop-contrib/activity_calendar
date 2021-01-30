@@ -6,7 +6,7 @@ your Backdrop website, similar to GitHub contribution calendar.
 
 On module's administration page you can configure such *Calendar settings* as
 monthly or yearly output format, lightest and darkest colors for highlighting
-calendar cells, point thresholds for changing the color of users daily activity.
+calendar cells, point thresholds for changing the color of users' daily activity.
 
 Under the *Activity points* section you can select actions that will increment
 activity points, such as creating nodes or submitting comments, limit content
@@ -31,7 +31,7 @@ Installation
   ```
 - Visit the configuration page under Administration > Configuration > User
   accounts > Activity calendar (admin/config/people/activity_calendar) and fill
-  in the required form fields.
+  in the form per your preferences.
 
 - Go to any user's profile page and enjoy checking their activity calendar.
 
