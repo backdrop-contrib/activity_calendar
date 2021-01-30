@@ -15,7 +15,7 @@ function activity_calendar_menu() {
    'type' => MENU_NORMAL_ITEM,
    'page callback' => 'backdrop_get_form',
    'page arguments' => ['activity_calendar_admin_form'],
-   'access arguments' => ['administer site configurations'],
+   'access arguments' => ['administer site configuration'],
    'file' => 'activity_calendar.admin.inc',
  ];
 
