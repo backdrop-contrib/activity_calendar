@@ -243,7 +243,7 @@ function activity_calendar_block_contents($block_id) {
         itemSelector: "#user-activity-heatmap",
         domain: "month",
         data: user_activity,
-        cellSize: 16,
+        cellSize: 15,
         cellPadding: 1,
         range: 1,
         itemName: ["' . t('point') . '", "' . t('points') . '"],
@@ -256,6 +256,7 @@ function activity_calendar_block_contents($block_id) {
       	},
         highlight: "now",
         weekStartOnMonday: ' . $first_day . ',
+        domainDynamicDimension: false,
       });
     </script>
     ';

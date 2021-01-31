@@ -1,7 +1,14 @@
 #activity-calendar .btn {
   margin: 5px 0 10px;
 }
+.cal-heatmap-container {
+  height: 130px;
+  margin-bottom: 10px;
+}
 
+.block-activity-calendar-user .block-content {
+  padding: 15px;
+}
 /**
 * Uncomment the following block to override cell colors.
 */
