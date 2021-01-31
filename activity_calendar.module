@@ -27,8 +27,8 @@ return $items;
 function activity_calendar_user_view_alter(&$build) {
   $config = config('activity_calendar.settings');
   $uid = $build['#account']->uid;
-  $path = backdrop_get_path('module', 'activity_calendar');
   // Load libraries.
+  $path = backdrop_get_path('module', 'activity_calendar');
   backdrop_add_css($path . '/activity_calendar.css');
   backdrop_add_css($path . '/lib/cal-heatmap.css');
   backdrop_add_js($path . '/lib/d3.min.js');
@@ -110,6 +110,7 @@ function activity_calendar_user_view_alter(&$build) {
     var user_activity = ' . json_encode($user_activity) . ';
     var cal = new CalHeatMap();
     cal.init({
+      itemNamespace: "backdropcms.org",
       legendColors: ["' . $config->get('color_min') . '","' . $config->get('color_max') . '"],
     	itemSelector: "#heatmap",
     	domain: "' . $calendar_type . '",
@@ -167,6 +168,10 @@ function activity_calendar_block_info() {
  * Implements hook_block_view().
  */
 function activity_calendar_block_view($delta = '') {
+  // Load only for registered users and when not on user pages.
+  if (user_is_anonymous() || (arg(0) == 'user')) {
+    return;
+  }
   $block = array();
   switch ($delta) {
     case 'user':
@@ -181,17 +186,16 @@ function activity_calendar_block_view($delta = '') {
 /**
  * Returns block content.
  */
-function activity_calendar_block_contents($block_id) {
+function activity_calendar_block_contents($delta) {
   global $user;
   $config = config('activity_calendar.settings');
-  // Do not load libraries twice for user pages.
-  if (arg(0) != 'user') {
-    $path = backdrop_get_path('module', 'activity_calendar');
-    backdrop_add_css($path . '/activity_calendar.css');
-    backdrop_add_css($path . '/lib/cal-heatmap.css');
-    backdrop_add_js($path . '/lib/d3.min.js');
-    backdrop_add_js($path . '/lib/cal-heatmap.min.js');
-  }
+  // Load libraries.
+  $path = backdrop_get_path('module', 'activity_calendar');
+  backdrop_add_css($path . '/activity_calendar.css');
+  backdrop_add_css($path . '/lib/cal-heatmap.css');
+  backdrop_add_js($path . '/lib/d3.min.js');
+  backdrop_add_js($path . '/lib/cal-heatmap.min.js');
+
   // Collect node points.
   if ($config->get('nodes') == 1) {
     $prefix = 'node_type_';
@@ -228,10 +232,10 @@ function activity_calendar_block_contents($block_id) {
     }
   // Sync calendar with the system's first day of the week.
   if (config_get('system.date', 'first_day') == '1') {
-    $first_day = "true";
+    $first_day = "true"; // The js requires this written as lowercase string.
   }
   else {
-    $first_day = "false";
+    $first_day = "false"; // The js requires this written as lowercase string.
   }
   $content = '<div id="user-activity-heatmap"></div>';
   $content .= '
@@ -239,6 +243,7 @@ function activity_calendar_block_contents($block_id) {
       var user_activity = ' . json_encode($user_activity) . ';
     	var cal = new CalHeatMap();
     	cal.init({
+        itemNamespace: "altagrade",
         legendColors: ["' . $config->get('color_min') . '","' . $config->get('color_max') . '"],
         itemSelector: "#user-activity-heatmap",
         domain: "month",
