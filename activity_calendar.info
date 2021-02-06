@@ -1,6 +1,6 @@
 name = Activity Calendar
-description = Visualizes users' activity over the yearly calendar.
+description = Visualizes users' activity on a yearly/monthly calendar.
 backdrop = 1.x
-package = Other
+package = Activity
 type = module
 configure = admin/config/people/activity_calendar

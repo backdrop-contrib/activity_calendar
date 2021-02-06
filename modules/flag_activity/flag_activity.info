@@ -1,0 +1,8 @@
+name = Flag Activity
+description = Flag module's bridge to Activity Calendar to visualize flag activity.
+backdrop = 1.x
+package = Activity
+type = module
+configure = admin/config/people/activity_calendar
+dependencies[] = flag
+dependencies[] = activity_calendar

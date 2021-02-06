@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * @file
+ * Flag activity module.
+ */
+
+/**
+ * Implements hook_calendar().
+ */
+function flag_activity_calendar() {
+  // Collect user stats only if called from user page.
+  if (arg(0) == 'user') {
+    $uid = arg(1); // Hook kicks in only on user pages, so it's safe to get $uid.
+    $flag_points = 1;
+    // Collect flag points.
+    $flags = db_select('flagging', 'f')
+    ->fields('f', array('flagging_id', 'timestamp'))
+    ->condition('f.uid', $uid)
+    ->execute()->fetchAll();
+    foreach ($flags as $flag) {
+      $user_activity[$flag->timestamp] = intval($flag_points);
+    }
+    $return['user_activity'] = $user_activity;
+  }
+
+  $return['module_human_name'] = 'Flag Activity';
+  return $return;
+}

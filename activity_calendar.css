@@ -1,14 +1,29 @@
-#activity-calendar .btn {
-  margin: 5px 0 10px;
+#activity-calendar .button {
+  color: white;
+  background: #0074bd;
+  border: none;
+  padding: 0 1.5625em;
+  margin-bottom: 1em;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  line-height: 2.875;
+  border-radius: 4px;
+  transition: background-color 0.6s ease 0s, color 0.6s ease 0s;
+}
+#activity-calendar .button[disabled] {
+  background: #eeeeee;
+  border-color: #eeeeee;
+  text-shadow: none;
+  color: #999999;
 }
 .cal-heatmap-container {
   height: 130px;
   margin-bottom: 10px;
 }
-
 .block-activity-calendar-user .block-content {
   padding: 15px;
 }
+
 /**
 * Uncomment the following block to override cell colors.
 */

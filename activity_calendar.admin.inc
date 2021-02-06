@@ -64,8 +64,8 @@ function activity_calendar_admin_form($form, &$form_state) {
     '#markup' => '
     <div id="activity-calendar">
     <div class="control-buttons">
-    <button id="PreviousDomain" class="btn previous">' . t('Previous') . '</button>
-    <button id="NextDomain" class="btn next">' . t('Next') . '</button>
+    <button id="PreviousDomain" class="button previous">' . t('Previous') . '</button>
+    <button id="NextDomain" class="button next">' . t('Next') . '</button>
     </div>
     <div id="heatmap"></div>
     </div>
@@ -136,7 +136,7 @@ function activity_calendar_admin_form($form, &$form_state) {
 
   $form['wrapper']['points'] = [
     '#type' => 'fieldset',
-    '#title' => t('Activity points'),
+    '#title' => t('Node & Comment points'),
     '#description' => t('Select user actions which increment their activity points.'),
   ];
 
@@ -197,6 +197,37 @@ function activity_calendar_admin_form($form, &$form_state) {
     ];
   }
 
+  // Create fieldset wrapper for contributed modules.
+  $form['wrapper']['contrib'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Contributed module points'),
+    '#description' => t('Configure activity points for contributed modules.'),
+  ];
+
+  // Check if any contributed module implemented hook_calendar().
+  module_invoke_all('calendar');
+  foreach (module_implements('calendar') as $module) {
+    $result[$module] = module_invoke($module, 'calendar');
+    sdpm($result);
+    $form['wrapper']['contrib'][$module] = [
+      '#type' => 'textfield',
+      '#title' => t($result[$module]['module_human_name']),
+      '#description' => t('Indicate number of points assigned for this activity.'),
+      '#size' => 10,
+      '#default_value' => $config->get('comment_points'),
+      '#states' => [
+        'invisible' => [
+          ':input[name="comments"]' => ['checked' => FALSE],
+        ],
+      ],
+    ];
+  }
+  // Unset fieldset wrapper for contributed modules if none found.
+  if (!isset($module)) {
+    unset($form['wrapper']['contrib']);
+  }
+
+  #sdpm($form);
   return system_settings_form($form);
 }
 
