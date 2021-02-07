@@ -10,7 +10,11 @@ calendar cells, point thresholds for changing the color of users' daily activity
 
 Under the *Activity points* section you can select actions that will increment
 activity points, such as creating nodes or submitting comments, limit content
-types and set how many points users get by creating new nodes and comments.
+types and set how many points users get by creating new nodes and comments per
+content type.
+
+If *Flag Activity* sub-module is enabled, you can configure number of points
+assigned for each flagging.
 
 ![Activity Calendar](https://raw.githubusercontent.com/backdrop-contrib/activity_calendar/1.x-1.x/activity_calandar.png
 )

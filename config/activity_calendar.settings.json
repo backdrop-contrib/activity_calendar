@@ -10,5 +10,15 @@
     "node_type_post": 1,
     "node_points": "7",
     "comments": 1,
-    "comment_points": "1"
+    "comment_points": "1",
+    "blog_points": "3",
+    "page_points": "3",
+    "post_points": "5",
+    "blog_comments": 1,
+    "blog_comment_points": "1",
+    "page_comments": 0,
+    "page_comment_points": "1",
+    "post_comments": 1,
+    "post_comment_points": "2",
+    "flag_activity": "1"
 }

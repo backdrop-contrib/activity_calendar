@@ -58,6 +58,7 @@ function activity_calendar_user_view_alter(&$build) {
       if (strpos($option, $prefix) !== FALSE) {
         if ($value == TRUE) {
           $content_type = str_replace($prefix, "", $option);
+          $points = $config->get($content_type . '_points');
           $nodes = db_select('node', 'n')
           ->fields('n', array('nid', 'created'))
           ->condition('n.uid', $uid)
@@ -65,7 +66,7 @@ function activity_calendar_user_view_alter(&$build) {
           ->condition('n.status', '1')
           ->execute()->fetchAll();
           foreach ($nodes as $node) {
-            $user_activity[$node->created] = intval($config->get('node_points'));
+            $user_activity[$node->created] = intval($points);
           }
         }
       }
@@ -74,13 +75,32 @@ function activity_calendar_user_view_alter(&$build) {
 
   // Collect comment points.
   if ($config->get('comments') == 1) {
-    $comments = db_select('comment', 'c')
-    ->fields('c', array('cid', 'created'))
-    ->condition('c.uid', $uid)
-    ->condition('c.status', '1')
-    ->execute()->fetchAll();
-    foreach ($comments as $comment) {
-      $user_activity[$comment->created] = intval($config->get('comment_points'));
+    $suffix = '_comments';
+    foreach ($config->get() as $option => $value) {
+      if (strpos($option, $suffix) !== FALSE) {
+        if ($value == TRUE) {
+          $content_type = str_replace($suffix, "", $option);
+          $points = $config->get($content_type . '_comment_points');
+          $nodes = db_select('node', 'n')
+          ->fields('n', array('nid'))
+          ->condition('n.type', $content_type)
+          ->condition('n.status', '1')
+          ->execute()->fetchAll();
+          unset($node_list);
+          foreach ($nodes as $node) {
+            $node_list[] = $node->nid;
+          }
+          $comments = db_select('comment', 'c')
+          ->fields('c', array('cid', 'nid', 'created'))
+          ->condition('c.nid', ($node_list), 'IN')
+          ->condition('c.uid', $uid)
+          ->condition('c.status', '1')
+          ->execute()->fetchAll();
+          foreach ($comments as $comment) {
+            $user_activity[$comment->created] = intval($points);
+          }
+        }
+      }
     }
   }
 
@@ -88,7 +108,9 @@ function activity_calendar_user_view_alter(&$build) {
   module_invoke_all('calendar');
   foreach (module_implements('calendar') as $module) {
     $result[$module] = module_invoke($module, 'calendar');
-    $user_activity = $user_activity + $result['flag_activity']['user_activity'];
+    if ($result[$module]['user_activity']) {
+      $user_activity = $user_activity + $result[$module]['user_activity'];
+    }
   }
 
   // Display the control button only if user has nodes for previous years.
@@ -203,6 +225,8 @@ function activity_calendar_block_contents($delta) {
   backdrop_add_js($path . '/lib/d3.min.js');
   backdrop_add_js($path . '/lib/cal-heatmap.min.js');
 
+
+
   // Collect node points.
   if ($config->get('nodes') == 1) {
     $prefix = 'node_type_';
@@ -210,6 +234,7 @@ function activity_calendar_block_contents($delta) {
       if (strpos($option, $prefix) !== FALSE) {
         if ($value == TRUE) {
           $content_type = str_replace($prefix, "", $option);
+          $points = $config->get($content_type . '_points');
           $nodes = db_select('node', 'n')
           ->fields('n', array('nid', 'created'))
           ->condition('n.uid', $user->uid)
@@ -218,7 +243,7 @@ function activity_calendar_block_contents($delta) {
           ->condition('n.status', '1')
           ->execute()->fetchAll();
           foreach ($nodes as $node) {
-            $user_activity[$node->created] = intval($config->get('node_points'));
+            $user_activity[$node->created] = intval($points);
           }
         }
       }
@@ -227,16 +252,45 @@ function activity_calendar_block_contents($delta) {
 
   // Collect comment points.
   if ($config->get('comments') == 1) {
-  $comments = db_select('comment', 'c')
-      ->fields('c', array('cid', 'created'))
-      ->condition('c.uid', $user->uid)
-      ->condition('c.created', strtotime('first day of this month'), '>=')
-      ->condition('c.status', '1')
-      ->execute()->fetchAll();
-      foreach ($comments as $comment) {
-        $user_activity[$comment->created] = intval($config->get('comment_points'));
+    $suffix = '_comments';
+    foreach ($config->get() as $option => $value) {
+      if (strpos($option, $suffix) !== FALSE) {
+        if ($value == TRUE) {
+          $content_type = str_replace($suffix, "", $option);
+          $points = $config->get($content_type . '_comment_points');
+          $nodes = db_select('node', 'n')
+          ->fields('n', array('nid'))
+          ->condition('n.type', $content_type)
+          ->condition('n.status', '1')
+          ->execute()->fetchAll();
+          unset($node_list);
+          foreach ($nodes as $node) {
+            $node_list[] = $node->nid;
+          }
+          $comments = db_select('comment', 'c')
+          ->fields('c', array('cid', 'nid', 'created'))
+          ->condition('c.nid', ($node_list), 'IN')
+          ->condition('c.uid', $user->uid)
+          ->condition('c.created', strtotime('first day of this month'), '>=')
+          ->condition('c.status', '1')
+          ->execute()->fetchAll();
+          foreach ($comments as $comment) {
+            $user_activity[$comment->created] = intval($points);
+          }
+        }
       }
     }
+  }
+
+  // Calling all modules implementing 'hook_activity_calendar':
+  module_invoke_all('calendar');
+  foreach (module_implements('calendar') as $module) {
+    $result[$module] = module_invoke($module, 'calendar');
+    if ($result[$module]['user_activity']) {
+      $user_activity = $user_activity + $result[$module]['user_activity'];
+    }
+  }
+
   // Sync calendar with the system's first day of the week.
   if (config_get('system.date', 'first_day') == '1') {
     $first_day = "true"; // The js requires this written as lowercase string.
