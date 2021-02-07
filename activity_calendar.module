@@ -92,7 +92,7 @@ function activity_calendar_user_view_alter(&$build) {
           }
           $comments = db_select('comment', 'c')
           ->fields('c', array('cid', 'nid', 'created'))
-          ->condition('c.nid', ($node_list), 'IN')
+          ->condition('c.nid', [$node_list], 'in')
           ->condition('c.uid', $uid)
           ->condition('c.status', '1')
           ->execute()->fetchAll();
@@ -269,7 +269,7 @@ function activity_calendar_block_contents($delta) {
           }
           $comments = db_select('comment', 'c')
           ->fields('c', array('cid', 'nid', 'created'))
-          ->condition('c.nid', ($node_list), 'IN')
+          ->condition('c.nid', [$node_list], 'IN')
           ->condition('c.uid', $user->uid)
           ->condition('c.created', strtotime('first day of this month'), '>=')
           ->condition('c.status', '1')
