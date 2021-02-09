@@ -81,21 +81,13 @@ function activity_calendar_user_view_alter(&$build) {
         if ($value == TRUE) {
           $content_type = str_replace($suffix, "", $option);
           $points = $config->get($content_type . '_comment_points');
-          $nodes = db_select('node', 'n')
-          ->fields('n', array('nid'))
-          ->condition('n.type', $content_type)
-          ->condition('n.status', '1')
-          ->execute()->fetchAll();
-          unset($node_list);
-          foreach ($nodes as $node) {
-            $node_list[] = $node->nid;
-          }
-          $comments = db_select('comment', 'c')
-          ->fields('c', array('cid', 'nid', 'created'))
-          ->condition('c.nid', [$node_list], 'in')
-          ->condition('c.uid', $uid)
-          ->condition('c.status', '1')
-          ->execute()->fetchAll();
+          $query = db_select('comment', 'c');
+          $query->leftJoin('node', 'n', 'c.nid = n.nid');
+          $query->fields('c', array('nid', 'created'));
+          $query->condition('n.type', $content_type);
+          $query->condition('c.uid', $uid);
+          $query->condition('c.status', '1');
+          $comments = $query->execute()->fetchAll();
           foreach ($comments as $comment) {
             $user_activity[$comment->created] = intval($points);
           }
@@ -258,22 +250,14 @@ function activity_calendar_block_contents($delta) {
         if ($value == TRUE) {
           $content_type = str_replace($suffix, "", $option);
           $points = $config->get($content_type . '_comment_points');
-          $nodes = db_select('node', 'n')
-          ->fields('n', array('nid'))
-          ->condition('n.type', $content_type)
-          ->condition('n.status', '1')
-          ->execute()->fetchAll();
-          unset($node_list);
-          foreach ($nodes as $node) {
-            $node_list[] = $node->nid;
-          }
-          $comments = db_select('comment', 'c')
-          ->fields('c', array('cid', 'nid', 'created'))
-          ->condition('c.nid', [$node_list], 'IN')
-          ->condition('c.uid', $user->uid)
-          ->condition('c.created', strtotime('first day of this month'), '>=')
-          ->condition('c.status', '1')
-          ->execute()->fetchAll();
+          $query = db_select('comment', 'c');
+          $query->leftJoin('node', 'n', 'c.nid = n.nid');
+          $query->fields('c', array('nid', 'created'));
+          $query->condition('n.type', $content_type);
+          $query->condition('c.uid', $user->uid);
+          $query->condition('c.created', strtotime('first day of this month'), '>=');
+          $query->condition('c.status', '1');
+          $comments = $query->execute()->fetchAll();
           foreach ($comments as $comment) {
             $user_activity[$comment->created] = intval($points);
           }
