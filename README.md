@@ -4,6 +4,33 @@ Activity Calendar
 Activity Calendar module creates an activity calendar heatmap for each user of
 your Backdrop website, similar to GitHub contribution calendar.
 
+![Activity Calendar](https://raw.githubusercontent.com/backdrop-contrib/activity_calendar/1.x-1.x/activity_calandar.png
+)
+
+Requirements
+------------
+
+This module relies on [Cal-HeatMap library](https://cal-heatmap.com). No need to
+download anything as the library files are already bundled into the module.  
+
+Installation
+------------
+
+- Install this module using the official Backdrop CMS instructions at
+  https://backdropcms.org/guide/modules or run the following oneliner command
+  in case if [Brush](https://github.com/backdrop-contrib/brush) is installed:
+
+  ```
+  brush en activity_calendar -y
+  ```
+- Visit the configuration page under Administration > Configuration > User
+  accounts > Activity calendar (admin/config/people/activity_calendar) and fill
+  in the form per your preferences.
+
+- Go to any user's profile page and enjoy checking their activity calendar.
+
+Configuration
+-------------
 On module's administration page you can configure such *Calendar settings* as
 monthly or yearly output format, lightest and darkest colors for highlighting
 calendar cells, point thresholds for changing the color of users' daily activity.
@@ -63,31 +90,6 @@ function flag_activity_calendar() {
   return $result;
 }
 ```
-
-![Activity Calendar](https://raw.githubusercontent.com/backdrop-contrib/activity_calendar/1.x-1.x/activity_calandar.png
-)
-
-Requirements
-------------
-
-This module relies on [Cal-HeatMap library](https://cal-heatmap.com). No need to
-download anything as the library files are already bundled into the module.  
-
-Installation
-------------
-
-- Install this module using the official Backdrop CMS instructions at
-  https://backdropcms.org/guide/modules or run the following oneliner command
-  in case if [Brush](https://github.com/backdrop-contrib/brush) is installed:
-
-  ```
-  brush en activity_calendar -y
-  ```
-- Visit the configuration page under Administration > Configuration > User
-  accounts > Activity calendar (admin/config/people/activity_calendar) and fill
-  in the form per your preferences.
-
-- Go to any user's profile page and enjoy checking their activity calendar.
 
 Issues
 ------
