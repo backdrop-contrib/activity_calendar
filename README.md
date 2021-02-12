@@ -14,7 +14,55 @@ types and set how many points users get by creating new nodes and comments per
 content type.
 
 If *Flag Activity* sub-module is enabled, you can configure number of points
-assigned for each flagging.
+assigned for each flagging. 
+
+Other modules can implement `hook_activity_calendar()` that should return array
+of `module_name` string and `$user_activity` sub-array, which in turn should have
+Unix timestamps as array keys and number of points for each timestamp entry. [For 
+Example](https://github.com/backdrop-contrib/activity_calendar/blob/1.x-1.x/modules/flag_activity/flag_activity.module):
+
+
+```PHP
+
+/**
+ * @file
+ * Flag activity module.
+ */
+
+/**
+ * Implements hook_calendar().
+ */
+function flag_activity_calendar() {
+  $config_flag_points = config_get('activity_calendar.settings', 'flag_activity');
+  $flag_points = ($config_flag_points) ? $config_flag_points : 1;
+
+  if (arg(0) == 'user') {
+    // Collect all flag points as the hook is called from user page.
+    $flags = db_select('flagging', 'f')
+    ->fields('f', array('flagging_id', 'timestamp'))
+    ->condition('f.uid', arg(1))
+    ->execute()->fetchAll();
+  }
+  else {
+    // Collect flag points only for the current month.
+    global $user;
+    $flags = db_select('flagging', 'f')
+    ->fields('f', array('flagging_id', 'timestamp'))
+    ->condition('f.uid', $user->uid)
+    ->condition('f.timestamp', strtotime('first day of this month'), '>=')
+    ->execute()->fetchAll();
+  }
+
+  if (!empty($flags)) {
+    foreach ($flags as $flag) {
+      $user_activity[$flag->timestamp] = intval($flag_points);
+    }
+    $result['module_name'] = 'Flag Activity';
+    $result['user_activity'] = $user_activity;
+  }
+  return $result;
+}
+```
 
 ![Activity Calendar](https://raw.githubusercontent.com/backdrop-contrib/activity_calendar/1.x-1.x/activity_calandar.png
 )
