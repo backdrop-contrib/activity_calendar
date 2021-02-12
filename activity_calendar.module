@@ -101,6 +101,10 @@ function activity_calendar_user_view_alter(&$build) {
   foreach (module_implements('calendar') as $module) {
     $result[$module] = module_invoke($module, 'calendar');
     if ($result[$module]['user_activity']) {
+      // Prepare array if nodes returned no user activity.
+      if (!isset($user_activity)) {
+        $user_activity = array();
+      }
       $user_activity = $user_activity + $result[$module]['user_activity'];
     }
   }
@@ -271,6 +275,10 @@ function activity_calendar_block_contents($delta) {
   foreach (module_implements('calendar') as $module) {
     $result[$module] = module_invoke($module, 'calendar');
     if ($result[$module]['user_activity']) {
+      // Prepare array if nodes returned no user activity.
+      if (!isset($user_activity)) {
+        $user_activity = array();
+      }
       $user_activity = $user_activity + $result[$module]['user_activity'];
     }
   }
