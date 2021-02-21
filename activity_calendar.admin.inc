@@ -98,6 +98,7 @@ function activity_calendar_admin_form($form, &$form_state) {
     	cellPadding: 1,
       domainGutter: 0,
     	range: ' . $range . ',
+      tooltip: true,
       itemName: ["' . t('point') . '", "' . t('points') . '"],
       domainDynamicDimension: false,
     	previousSelector: "#PreviousDomain",

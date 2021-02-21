@@ -126,8 +126,10 @@ function activity_calendar_user_view_alter(&$build) {
     <div id="activity-calendar">
     ' . $control_buttons . '
     <div id="heatmap"></div>
+    <div id="heatmap-items"></div>
     </div>
     <script type="text/javascript">
+    var activity_table = "<div>test</div>";
     var user_activity = ' . json_encode($user_activity) . ';
     var cal = new CalHeatMap();
     cal.init({
@@ -157,6 +159,7 @@ function activity_calendar_user_view_alter(&$build) {
     	cellSize: 10,
     	cellPadding: 1,
       domainGutter: 0,
+      tooltip: true,
     	range: ' . $range . ',
       itemName: ["' . t('point') . '", "' . t('points') . '"],
       domainDynamicDimension: false,
@@ -165,6 +168,13 @@ function activity_calendar_user_view_alter(&$build) {
       legend: [' . $config->get('thresholds') . '],
       highlight: "now",
       weekStartOnMonday: ' . $first_day . ',
+      onClick: function(date, nb) {
+        $("#heatmap-items").html("On <b>" +
+          date + "</b> user earned <b>" +
+          (nb === null ? "no" : nb) + "</b> points." + activity_table
+        );
+      },
+
     });
     $("#CurrentDomain").on("click", function(event) {
       cal.rewind();
@@ -296,6 +306,7 @@ function activity_calendar_block_contents($delta) {
         cellSize: 15,
         cellPadding: 1,
         range: 1,
+        tooltip: true,
         itemName: ["' . t('point') . '", "' . t('points') . '"],
         legend: [' . $config->get('thresholds') . '],
         legendVerticalPosition: "center",
