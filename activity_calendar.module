@@ -200,7 +200,7 @@ function activity_calendar_block_view($delta = '') {
   $block = array();
   switch ($delta) {
     case 'user':
-      $block['subject'] = 'My activity';
+      $block['subject'] = t('My activity');
       $block['content'] = activity_calendar_block_contents($delta);
       break;
   }
