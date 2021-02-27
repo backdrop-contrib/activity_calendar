@@ -23,7 +23,14 @@
 .block-activity-calendar-user .block-content {
   padding: 15px;
 }
-
+#activity-calendar-admin-form input[type="color"] {
+    height: 35px;
+    width: 35px;
+    padding: 0px;
+    cursor: pointer;
+    display: table-cell;
+    vertical-align: middle;
+}
 /**
 * Uncomment the following block to override cell colors.
 */

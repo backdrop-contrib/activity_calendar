@@ -113,17 +113,17 @@ function activity_calendar_admin_form($form, &$form_state) {
   ];
 
   $form['wrapper']['calendar']['color_min'] = [
-    '#type' => 'textfield',
+    '#type' => 'color',
     '#title' => t('Lightest color'),
     '#size' => 10,
-    '#description' => t('Color-code used for highlighting the calendar cells. Format: "#dae289"'),
+    '#description' => t('Pick up the lightest color for highlighting the calendar cells.'),
     '#default_value' => $config->get('color_min'),
   ];
   $form['wrapper']['calendar']['color_max'] = [
-    '#type' => 'textfield',
+    '#type' => 'color',
     '#title' => t('Darkest color'),
     '#size' => 10,
-    '#description' => t('Color-code used for highlighting the calendar cells. Format: "#245220"'),
+    '#description' => t('Pickup the darkest color for highlighting the calendar cells.'),
     '#default_value' => $config->get('color_max'),
   ];
   $form['wrapper']['calendar']['thresholds'] = [
