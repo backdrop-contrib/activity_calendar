@@ -220,7 +220,7 @@ function activity_calendar_block_view($delta = '') {
  */
 function activity_calendar_block_contents($delta) {
   global $user;
-  dpm(backdrop_get_user_timezone());
+  
   $config = config('activity_calendar.settings');
   // Load libraries.
   $path = backdrop_get_path('module', 'activity_calendar');
