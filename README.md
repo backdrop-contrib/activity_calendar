@@ -41,11 +41,11 @@ types and set how many points users get by creating new nodes and comments per
 content type.
 
 If *Flag Activity* sub-module is enabled, you can configure number of points
-assigned for each flagging. 
+assigned for each flagging.
 
-Other modules can implement `hook_activity_calendar()` that should return array
+Other modules can implement `hook_calendar()` that should return array
 of `module_name` string and `$user_activity` sub-array, which in turn should have
-Unix timestamps as array keys and number of points for each timestamp entry. [For 
+Unix timestamps as array keys and number of points for each timestamp entry. [For
 Example](https://github.com/backdrop-contrib/activity_calendar/blob/1.x-1.x/modules/flag_activity/flag_activity.module):
 
 
