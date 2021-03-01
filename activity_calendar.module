@@ -109,10 +109,10 @@ function activity_calendar_user_view_alter(&$build) {
     }
   }
 
+  $control_buttons = '';
   if (!isset($user_activity)) {
     // Show empty calendar if there is no any user activity yet.
     $user_activity = array();
-    $control_buttons = '';
     $start = time();
   }
   else {
@@ -220,6 +220,7 @@ function activity_calendar_block_view($delta = '') {
  */
 function activity_calendar_block_contents($delta) {
   global $user;
+  dpm(backdrop_get_user_timezone());
   $config = config('activity_calendar.settings');
   // Load libraries.
   $path = backdrop_get_path('module', 'activity_calendar');
