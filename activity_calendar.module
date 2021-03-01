@@ -201,7 +201,7 @@ function activity_calendar_block_info() {
  */
 function activity_calendar_block_view($delta = '') {
   // Load only for registered users and when not on user pages.
-  if (user_is_anonymous() || (arg(0) == 'user')) {
+  if (user_is_anonymous()) {
     return;
   }
   $block = array();
@@ -223,11 +223,14 @@ function activity_calendar_block_contents($delta) {
 
   $config = config('activity_calendar.settings');
   // Load libraries.
-  $path = backdrop_get_path('module', 'activity_calendar');
-  backdrop_add_css($path . '/activity_calendar.css');
-  backdrop_add_css($path . '/lib/cal-heatmap.css');
-  backdrop_add_js($path . '/lib/d3.min.js');
-  backdrop_add_js($path . '/lib/cal-heatmap.min.js');
+  $scripts = backdrop_add_js();
+  if(!isset($scripts['modules/activity_calendar/lib/cal-heatmap.min.js'])) {
+    $path = backdrop_get_path('module', 'activity_calendar');
+    backdrop_add_css($path . '/activity_calendar.css');
+    backdrop_add_css($path . '/lib/cal-heatmap.css');
+    backdrop_add_js($path . '/lib/d3.min.js');
+    backdrop_add_js($path . '/lib/cal-heatmap.min.js');
+  }
 
   // Collect node points.
   if ($config->get('nodes') == 1) {
