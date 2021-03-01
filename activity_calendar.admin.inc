@@ -123,7 +123,7 @@ function activity_calendar_admin_form($form, &$form_state) {
     '#type' => 'color',
     '#title' => t('Darkest color'),
     '#size' => 10,
-    '#description' => t('Pickup the darkest color for highlighting the calendar cells.'),
+    '#description' => t('Pick up the darkest color for highlighting the calendar cells.'),
     '#default_value' => $config->get('color_max'),
   ];
   $form['wrapper']['calendar']['thresholds'] = [

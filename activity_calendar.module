@@ -109,16 +109,23 @@ function activity_calendar_user_view_alter(&$build) {
     }
   }
 
-  // Display the control button only if user has nodes for previous years.
-  $first_node_date = min(array_keys($user_activity));
-  $start = date("Y", $first_node_date);
-  $control_buttons = '';
-  if ($start < date("Y", time())) {
-    $control_buttons = '<div class="control-buttons">
-    <button id="PreviousDomain" class="button previous">' . t('Previous') . '</button>
-    <button id="CurrentDomain" class="button current">' . t('Current') . '</button>
-    <button id="NextDomain" class="button next">' . t('Next') . '</button>
-    </div>';
+  if (!isset($user_activity)) {
+    // Show empty calendar if there is no any user activity yet.
+    $user_activity = array();
+    $control_buttons = '';
+    $start = time();
+  }
+  else {
+    // Display the control button only if user has nodes for previous years.
+    $first_node_date = min(array_keys($user_activity));
+    $start = date("Y", $first_node_date);
+    if ($start < date("Y", time())) {
+      $control_buttons = '<div class="control-buttons">
+      <button id="PreviousDomain" class="button previous">' . t('Previous') . '</button>
+      <button id="CurrentDomain" class="button current">' . t('Current') . '</button>
+      <button id="NextDomain" class="button next">' . t('Next') . '</button>
+      </div>';
+    }
   }
 
   // Build activity heatmap calendar.
@@ -221,8 +228,6 @@ function activity_calendar_block_contents($delta) {
   backdrop_add_js($path . '/lib/d3.min.js');
   backdrop_add_js($path . '/lib/cal-heatmap.min.js');
 
-
-
   // Collect node points.
   if ($config->get('nodes') == 1) {
     $prefix = 'node_type_';
@@ -281,6 +286,11 @@ function activity_calendar_block_contents($delta) {
       }
       $user_activity = $user_activity + $result[$module]['user_activity'];
     }
+  }
+
+  if (!isset($user_activity)) {
+    // Show empty calendar if there is no any user activity yet.
+    $user_activity = array();
   }
 
   // Sync calendar with the system's first day of the week.
