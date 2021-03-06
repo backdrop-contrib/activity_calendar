@@ -66,7 +66,7 @@ function activity_calendar_user_view_alter(&$build) {
           ->condition('n.status', '1')
           ->execute()->fetchAll();
           foreach ($nodes as $node) {
-            $user_activity[$node->created] = intval($points);
+            $viewed_user_activity[$node->created] = intval($points);
           }
         }
       }
@@ -89,7 +89,7 @@ function activity_calendar_user_view_alter(&$build) {
           $query->condition('c.status', '1');
           $comments = $query->execute()->fetchAll();
           foreach ($comments as $comment) {
-            $user_activity[$comment->created] = intval($points);
+            $viewed_user_activity[$comment->created] = intval($points);
           }
         }
       }
@@ -100,30 +100,30 @@ function activity_calendar_user_view_alter(&$build) {
   module_invoke_all('calendar');
   foreach (module_implements('calendar') as $module) {
     $result[$module] = module_invoke($module, 'calendar');
-    if ($result[$module]['user_activity']) {
+    if ($result[$module]['viewed_user_activity']) {
       // Prepare array if nodes returned no user activity.
-      if (!isset($user_activity)) {
-        $user_activity = array();
+      if (!isset($viewed_user_activity)) {
+        $viewed_user_activity = array();
       }
-      $user_activity = $user_activity + $result[$module]['user_activity'];
+      $viewed_user_activity = $viewed_user_activity + $result[$module]['viewed_user_activity'];
     }
   }
 
   $control_buttons = '';
-  if (!isset($user_activity)) {
+  if (!isset($viewed_user_activity)) {
     // Show empty calendar if there is no any user activity yet.
-    $user_activity = array();
+    $viewed_user_activity = array();
     $start = time();
   }
   else {
     // Display the control button only if user has nodes for previous years.
-    $first_node_date = min(array_keys($user_activity));
+    $first_node_date = min(array_keys($viewed_user_activity));
     $start = date("Y", $first_node_date);
     if ($start < date("Y", time())) {
       $control_buttons = '<div class="control-buttons">
-      <button id="PreviousDomain" class="button previous">' . t('Previous') . '</button>
-      <button id="CurrentDomain" class="button current">' . t('Current') . '</button>
-      <button id="NextDomain" class="button next">' . t('Next') . '</button>
+      <button id="PreviousYear" class="button previous">' . t('Previous') . '</button>
+      <button id="NextYear" class="button next">' . t('Next') . '</button>
+      <button id="CurrentYear" class="button current">' . t('Current') . '</button>
       </div>';
     }
   }
@@ -139,30 +139,30 @@ function activity_calendar_user_view_alter(&$build) {
     <div id="heatmap"></div>
     </div>
     <script type="text/javascript">
-    var user_activity = ' . json_encode($user_activity) . ';
-    var cal = new CalHeatMap();
-    cal.init({
-      itemNamespace: "backdropcms.org",
+    var viewed_user_activity = ' . json_encode($viewed_user_activity) . ';
+    var mcal = new CalHeatMap();
+    mcal.init({
+      itemNamespace: "viewed_user",
       legendColors: ["' . $config->get('color_min') . '","' . $config->get('color_max') . '"],
     	itemSelector: "#heatmap",
     	domain: "' . $calendar_type . '",
     	subDomain: "day",
-    	data: user_activity,
+    	data: viewed_user_activity,
       minDate: new Date(' . $start . ', 1),
       start: new Date(' . date("Y") . ', 0),
       maxDate: new Date(' . date("Y") . ', 0),
       onMinDomainReached: function(hit) {
       if (hit) {
-          $("#PreviousDomain").attr("disabled", "disabled");
+          $("#PreviousYear").attr("disabled", "disabled");
         } else {
-          $("#PreviousDomain").attr("disabled", false);
+          $("#PreviousYear").attr("disabled", false);
         }
       },
       onMaxDomainReached: function(hit) {
       if (hit) {
-          $("#NextDomain").attr("disabled", "disabled");
+          $("#NextYear").attr("disabled", "disabled");
         } else {
-          $("#NextDomain").attr("disabled", false);
+          $("#NextYear").attr("disabled", false);
         }
       },
     	cellSize: 10,
@@ -171,14 +171,14 @@ function activity_calendar_user_view_alter(&$build) {
     	range: ' . $range . ',
       itemName: ["' . t('point') . '", "' . t('points') . '"],
       domainDynamicDimension: false,
-    	previousSelector: "#PreviousDomain",
-    	nextSelector: "#NextDomain",
+    	previousSelector: "#PreviousYear",
+    	nextSelector: "#NextYear",
       legend: [' . $config->get('thresholds') . '],
       highlight: "now",
       weekStartOnMonday: ' . $first_day . ',
     });
-    $("#CurrentDomain").on("click", function(event) {
-      cal.rewind();
+    $("#CurrentYear").on("click", function(event) {
+      mcal.rewind();
     });
     </script>',
   ];
@@ -248,7 +248,7 @@ function activity_calendar_block_contents($delta) {
           ->condition('n.status', '1')
           ->execute()->fetchAll();
           foreach ($nodes as $node) {
-            $user_activity[$node->created] = intval($points);
+            $current_user_activity[$node->created] = intval($points);
           }
         }
       }
@@ -272,29 +272,24 @@ function activity_calendar_block_contents($delta) {
           $query->condition('c.status', '1');
           $comments = $query->execute()->fetchAll();
           foreach ($comments as $comment) {
-            $user_activity[$comment->created] = intval($points);
+            $current_user_activity[$comment->created] = intval($points);
           }
         }
       }
     }
   }
 
+  // Prepare array if nodes returned no user activity.
+  if (!isset($current_user_activity)) {
+    $current_user_activity = array();
+  }
   // Calling all modules implementing 'hook_activity_calendar':
   module_invoke_all('calendar');
   foreach (module_implements('calendar') as $module) {
     $result[$module] = module_invoke($module, 'calendar');
-    if ($result[$module]['user_activity']) {
-      // Prepare array if nodes returned no user activity.
-      if (!isset($user_activity)) {
-        $user_activity = array();
-      }
-      $user_activity = $user_activity + $result[$module]['user_activity'];
+    if (isset($result[$module]['current_user_activity'])) {
+      $current_user_activity = $current_user_activity + $result[$module]['current_user_activity'];
     }
-  }
-
-  if (!isset($user_activity)) {
-    // Show empty calendar if there is no any user activity yet.
-    $user_activity = array();
   }
 
   // Sync calendar with the system's first day of the week.
@@ -307,14 +302,14 @@ function activity_calendar_block_contents($delta) {
   $content = '<div id="user-activity-heatmap"></div>';
   $content .= '
    <script type="text/javascript">
-      var user_activity = ' . json_encode($user_activity) . ';
-    	var cal = new CalHeatMap();
-    	cal.init({
-        itemNamespace: "altagrade",
+      var current_user_activity = ' . json_encode($current_user_activity) . ';
+    	var bcal = new CalHeatMap();
+    	bcal.init({
+        itemNamespace: "current_user",
         legendColors: ["' . $config->get('color_min') . '","' . $config->get('color_max') . '"],
         itemSelector: "#user-activity-heatmap",
         domain: "month",
-        data: user_activity,
+        data: current_user_activity,
         cellSize: 15,
         cellPadding: 1,
         range: 1,

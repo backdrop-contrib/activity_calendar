@@ -16,6 +16,10 @@
   text-shadow: none;
   color: #999999;
 }
+#activity-calendar .button.current {
+  margin-left: 261px;
+}
+
 .cal-heatmap-container {
   height: 130px;
   margin-bottom: 10px;
